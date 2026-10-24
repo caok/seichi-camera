@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+<g fill="#ff3b30" fill-opacity="0.18" stroke="#ff3b30" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+<!-- Takao, sitting on the bench -->
+<ellipse cx="690" cy="402" rx="40" ry="46"/>
+<path d="M655 445 L690 452 L722 470 L738 522 L772 600 L806 638 L790 656 L768 648 L790 700 L802 828 L796 848 L734 850 L730 830 L746 800 L702 704 L648 702 L598 690 L584 640 L584 560 L600 482 L630 456 Z"/>
+<!-- Yukari, standing on the bench -->
+<ellipse cx="887" cy="118" rx="36" ry="44"/>
+<path d="M860 152 L906 152 L950 176 L968 250 L972 330 L978 410 L962 440 L958 520 L962 600 L950 622 L934 602 L930 500 L915 442 L890 520 L872 600 L882 668 L812 680 L840 640 L860 560 L870 452 L878 420 L875 330 L880 232 L860 200 L830 176 L814 150 L826 134 L850 150 Z"/>
+</g>
+</svg>

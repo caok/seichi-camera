@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+<g fill="#ff3b30" fill-opacity="0.15" stroke="#ff3b30" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">
+<!-- Suzume from behind, leaning over the bridge parapet (visitors: stand, hands on the railing) -->
+<ellipse cx="790" cy="235" rx="62" ry="72"/>
+<path d="M740 290 L840 285 L930 330 L975 450 L1005 560 L1000 640 L1030 780 L1005 790 L960 700 L930 640 L925 700 L935 760 L940 830 L870 835 L880 780 L840 720 L790 760 L775 860 L700 870 L700 830 L720 760 L700 720 L680 640 L640 700 L610 800 L585 795 L600 700 L625 560 L640 440 L680 340 Z"/>
+</g>
+</svg>

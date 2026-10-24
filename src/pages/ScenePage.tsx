@@ -1,11 +1,19 @@
+import { useRef } from 'react'
 import { Guidance } from '../components/Guidance'
 import { LangToggle, useI18n } from '../i18n'
+import { shotFromGallery } from '../lib/gallery'
 import { mapsUrl } from '../lib/geo'
 import { go } from '../router'
 import type { Scene } from '../types'
 
 export function ScenePage({ scene }: { scene: Scene }) {
   const { t, l } = useI18n()
+  const fileRef = useRef<HTMLInputElement>(null)
+  const onPick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (file) shotFromGallery(file, scene.id, scene.aspect).then(() => go(`/result/${scene.id}`), () => {})
+  }
   return (
     <div className="page scene">
       <header className="topbar">
@@ -47,6 +55,10 @@ export function ScenePage({ scene }: { scene: Scene }) {
           {t('lineUp')}
         </button>
       </div>
+      <button className="gallery-link" onClick={() => fileRef.current?.click()}>
+        🖼 {t('galleryFromScene')}
+      </button>
+      <input ref={fileRef} type="file" accept="image/*" hidden onChange={onPick} />
     </div>
   )
 }

@@ -2,27 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import { Guidance } from '../components/Guidance'
 import { useI18n } from '../i18n'
 import { CameraError, captureFrame, openCamera, stopCamera, type Facing } from '../lib/camera'
+import { shotFromGallery } from '../lib/gallery'
 import { setShot } from '../lib/store'
 import { go } from '../router'
 import type { Scene } from '../types'
-
-/** Loads a picked gallery photo and runs it through the same centre-crop as captureFrame */
-function galleryShot(img: HTMLImageElement, aspect: number): string {
-  const vw = img.naturalWidth
-  const vh = img.naturalHeight
-  let sw = vw
-  let sh = vh
-  if (vw / vh > aspect) sw = vh * aspect
-  else sh = vw / aspect
-  const sx = (vw - sw) / 2
-  const sy = (vh - sh) / 2
-  const outW = Math.min(1600, Math.round(sw))
-  const canvas = document.createElement('canvas')
-  canvas.width = outW
-  canvas.height = Math.round(outW / aspect)
-  canvas.getContext('2d')!.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height)
-  return canvas.toDataURL('image/jpeg', 0.9)
-}
 
 type OverlayMode = 'outline' | 'frame' | 'off'
 
@@ -102,14 +85,7 @@ export function CameraPage({ scene }: { scene: Scene }) {
     const file = e.target.files?.[0]
     e.target.value = '' // allow re-picking the same file
     if (!file) return
-    const url = URL.createObjectURL(file)
-    const img = new Image()
-    img.onload = () => {
-      setShot(scene.id, galleryShot(img, scene.aspect))
-      URL.revokeObjectURL(url)
-      go(`/result/${scene.id}`)
-    }
-    img.src = url
+    shotFromGallery(file, scene.id, scene.aspect).then(() => go(`/result/${scene.id}`), (err: Error) => setError(err.message))
   }
 
   return (
@@ -159,7 +135,11 @@ export function CameraPage({ scene }: { scene: Scene }) {
         {flash && <div className="flash" />}
         {error && (
           <div className="camera-error">
-            {error === 'denied' ? t('cameraDenied') : error === 'insecure' ? t('cameraInsecure') : error === 'unsupported' ? t('cameraUnsupported') : error}
+            <p>{error === 'denied' ? t('cameraDenied') : error === 'insecure' ? t('cameraInsecure') : error === 'unsupported' ? t('cameraUnsupported') : error}</p>
+            <button className="btn primary" onClick={pickFromGallery}>
+              🖼 {t('gallery')}
+            </button>
+            <small>{t('galleryHint')}</small>
           </div>
         )}
         {!error && !ready && <div className="camera-error">{t('startingCamera')}</div>}

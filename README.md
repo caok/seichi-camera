@@ -49,7 +49,18 @@ Then point `frame` / `outline` / `pose` in `src/data/scenes.ts` at the new files
 (copyright notice) and calibrate `spot` / `heading` on site. `scripts/stitch_quads.py` joins four
 quadrant screenshots into one full-resolution frame.
 
+## Deploy to GitHub Pages (recommended for demos)
+
+Every push to `main` builds and deploys via `.github/workflows/deploy-pages.yml`
+(one-time setup: repo **Settings → Pages → Source: GitHub Actions**).
+Live at https://caok.github.io/seichi-camera/ — no sandbox, so the camera works on iOS Safari
+and stamps persist in localStorage for 7 days.
+
 ## Publish to FeedMob Pages
+
+> FeedMob serves pages in a CSP sandbox; iOS Safari refuses camera access there
+> (`getUserMedia → TypeError`), so use the gallery fallback when demoing from FeedMob.
+
 
 FeedMob Pages serves pages under a CSP sandbox (no `allow-same-origin`) and its multi-file
 storage isn't configured, so we publish one self-contained HTML file:

@@ -26,8 +26,10 @@ export function CameraPage({ scene }: { scene: Scene }) {
   const [timer, setTimer] = useState<Timer>(0)
   const [countdown, setCountdown] = useState<number | null>(null)
   const [flash, setFlash] = useState(false)
+  // Bumped by the retry button to reopen the camera
+  const [attempt, setAttempt] = useState(0)
 
-  // (Re)open the camera whenever the lens changes
+  // (Re)open the camera whenever the lens changes or the user retries
   useEffect(() => {
     let stream: MediaStream | null = null
     let cancelled = false
@@ -47,7 +49,7 @@ export function CameraPage({ scene }: { scene: Scene }) {
       cancelled = true
       stopCamera(stream)
     }
-  }, [facing])
+  }, [facing, attempt])
 
   const capture = () => {
     const v = videoRef.current
@@ -136,7 +138,11 @@ export function CameraPage({ scene }: { scene: Scene }) {
         {error && (
           <div className="camera-error">
             <p>{error === 'denied' ? t('cameraDenied') : error === 'insecure' ? t('cameraInsecure') : error === 'unsupported' ? t('cameraUnsupported') : error}</p>
-            <button className="btn primary" onClick={pickFromGallery}>
+            <button className="btn primary" onClick={() => setAttempt(attempt + 1)}>
+              📷 {t('retryCamera')}
+            </button>
+            {/* Backup only: the camera is the main way to take the shot */}
+            <button className="btn" onClick={pickFromGallery}>
               🖼 {t('gallery')}
             </button>
             <small>{t('galleryHint')}</small>
@@ -168,9 +174,6 @@ export function CameraPage({ scene }: { scene: Scene }) {
           )}
           <button className={`chip ${timer ? 'active' : ''}`} onClick={nextTimer}>
             {timer ? t('timerSec', { s: timer }) : t('timer')}
-          </button>
-          <button className="chip" onClick={pickFromGallery} title={t('galleryHint')}>
-            🖼 {t('gallery')}
           </button>
         </div>
         <label className="slider">

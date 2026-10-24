@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Guidance } from '../components/Guidance'
 import { useI18n } from '../i18n'
-import { CameraError, captureFrame, openCamera, stopCamera, type Facing } from '../lib/camera'
+import { CameraError, captureFrame, describeError, openCamera, stopCamera, type Facing } from '../lib/camera'
 import { shotFromGallery } from '../lib/gallery'
 import { setShot } from '../lib/store'
 import { go } from '../router'
@@ -35,16 +35,30 @@ export function CameraPage({ scene }: { scene: Scene }) {
     let cancelled = false
     setReady(false)
     setError(null)
-    openCamera(facing)
-      .then((s) => {
-        if (cancelled) return stopCamera(s)
-        stream = s
-        const v = videoRef.current!
-        v.srcObject = s
-        return v.play()
-      })
-      .then(() => !cancelled && setReady(true))
-      .catch((e: Error) => !cancelled && setError(e instanceof CameraError ? e.code : e.name === 'NotAllowedError' ? 'denied' : e.message))
+    const start = async () => {
+      let s: MediaStream
+      try {
+        s = await openCamera(facing)
+      } catch (e) {
+        if (e instanceof CameraError) throw e
+        if ((e as Error)?.name === 'NotAllowedError') throw new Error('denied')
+        throw new Error(`getUserMedia → ${describeError(e)}`)
+      }
+      if (cancelled) return stopCamera(s)
+      stream = s
+      const v = videoRef.current
+      if (!v) throw new Error('video element missing')
+      v.srcObject = s
+      try {
+        await v.play()
+      } catch (e) {
+        // iOS can reject play() even though frames arrive; accept the stream if it has a size
+        await new Promise((r) => setTimeout(r, 800))
+        if (!v.videoWidth) throw new Error(`play → ${describeError(e)}`)
+      }
+      if (!cancelled) setReady(true)
+    }
+    start().catch((e: Error) => !cancelled && setError(e instanceof CameraError ? e.code : e.message))
     return () => {
       cancelled = true
       stopCamera(stream)
@@ -141,6 +155,7 @@ export function CameraPage({ scene }: { scene: Scene }) {
             <button className="btn primary" onClick={() => setAttempt(attempt + 1)}>
               📷 {t('retryCamera')}
             </button>
+            {attempt > 0 && <small>{t('retried', { n: attempt })}</small>}
             {/* Backup only: the camera is the main way to take the shot */}
             <button className="btn" onClick={pickFromGallery}>
               🖼 {t('gallery')}

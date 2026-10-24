@@ -15,14 +15,30 @@ export async function openCamera(facing: Facing = 'environment'): Promise<MediaS
   if (!navigator.mediaDevices?.getUserMedia) {
     throw new CameraError('unsupported')
   }
-  return navigator.mediaDevices.getUserMedia({
-    video: {
-      facingMode: { ideal: facing },
-      width: { ideal: 1920 },
-      height: { ideal: 1080 },
-    },
-    audio: false,
-  })
+  // Some mobile browsers reject richer constraints (TypeError / OverconstrainedError), so fall back
+  // to progressively simpler requests. Permission errors are not retried.
+  const attempts: MediaStreamConstraints[] = [
+    { video: { facingMode: { ideal: facing }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false },
+    { video: { facingMode: facing }, audio: false },
+    { video: true, audio: false },
+  ]
+  let lastError: unknown
+  for (const constraints of attempts) {
+    try {
+      return await navigator.mediaDevices.getUserMedia(constraints)
+    } catch (e) {
+      lastError = e
+      const name = (e as Error)?.name
+      if (name === 'NotAllowedError' || name === 'SecurityError' || name === 'AbortError') break
+    }
+  }
+  throw lastError
+}
+
+/** Human-readable description of any camera failure, for on-screen diagnostics */
+export function describeError(e: unknown): string {
+  if (e instanceof Error) return e.message && e.message !== e.name ? `${e.name}: ${e.message}` : e.name
+  return String(e)
 }
 
 export function stopCamera(stream: MediaStream | null) {

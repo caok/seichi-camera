@@ -1,4 +1,5 @@
 import type { Scene } from '../types'
+import { stories } from './stories'
 
 /** Resolve a file in /public against the deploy base (data: URIs from the single-file build pass through) */
 const asset = (path: string) => (path.startsWith('data:') ? path : `${import.meta.env.BASE_URL}${path}`)
@@ -239,5 +240,7 @@ export const scenes: Scene[] = [
     verified: false,
   },
 ]
+
+for (const s of scenes) s.story = stories[s.id]
 
 export const getScene = (id: string) => scenes.find((s) => s.id === id)

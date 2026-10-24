@@ -9,6 +9,17 @@ export interface L10n {
   en: string
 }
 
+/** "Story behind the shot", revealed after taking the photo. Every item should be backed by `sources`. */
+export interface SceneStory {
+  /** What the anime shows vs what is there now */
+  diff: L10n
+  /** What happened around the place / the work */
+  story: L10n
+  /** One-liner also printed on the share card */
+  fact: L10n
+  sources: { label: string; url: string }[]
+}
+
 export interface Scene {
   id: string
   /** Anime / film title */
@@ -38,6 +49,7 @@ export interface Scene {
   matchType: 'exact' | 'vibe'
   description: L10n
   tips: L10n[]
+  story?: SceneStory
   /** Whether spot / heading have been checked on site */
   verified: boolean
 }

@@ -1,3 +1,5 @@
+import { storage } from './storage'
+
 // Last captured photo, kept in memory between the camera and result pages.
 let lastShot: { sceneId: string; dataUrl: string } | null = null
 
@@ -12,7 +14,7 @@ const STAMPS_KEY = 'seichi.stamps'
 
 export function getStamps(): string[] {
   try {
-    return JSON.parse(localStorage.getItem(STAMPS_KEY) ?? '[]')
+    return JSON.parse(storage.get(STAMPS_KEY) ?? '[]')
   } catch {
     return []
   }
@@ -22,6 +24,6 @@ export function getStamps(): string[] {
 export function addStamp(sceneId: string): boolean {
   const stamps = getStamps()
   if (stamps.includes(sceneId)) return false
-  localStorage.setItem(STAMPS_KEY, JSON.stringify([...stamps, sceneId]))
+  storage.set(STAMPS_KEY, JSON.stringify([...stamps, sceneId]))
   return true
 }

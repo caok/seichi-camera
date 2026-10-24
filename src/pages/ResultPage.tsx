@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { StoryCard } from '../components/StoryCard'
 import { LangToggle, useI18n } from '../i18n'
 import { composeCard, shareOrDownload } from '../lib/compose'
 import { addStamp, getShot, getStamps } from '../lib/store'
@@ -21,6 +22,7 @@ export function ResultPage({ scene }: { scene: Scene }) {
     anime: t('cardAnime'),
     real: t('cardReal'),
     locale: lang === 'zh' ? 'zh-CN' : 'en-US',
+    fact: scene.story ? `💡 ${l(scene.story.fact)}` : undefined,
   }
   const cardKey = JSON.stringify(cardText)
 
@@ -76,10 +78,13 @@ export function ResultPage({ scene }: { scene: Scene }) {
         </div>
       </section>
 
+      {scene.story && <StoryCard story={scene.story} />}
+
       <section>
         <h2 className="section-title">{t('yourCard')}</h2>
         {error && <p className="error">{error}</p>}
         {card ? <img className="card-preview" src={card.url} alt="Comparison card" /> : !error && <div className="card-loading">{t('composing')}</div>}
+        {card && <p className="hint center">{t('longPressHint')}</p>}
       </section>
 
       <div className="actions">

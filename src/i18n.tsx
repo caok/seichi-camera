@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { storage } from './lib/storage'
 import type { L10n } from './types'
 
 export type Lang = 'zh' | 'en'
@@ -52,6 +53,13 @@ const zh = {
   share: '分享 / 保存',
   retake: '重拍',
   saved: '已保存到设备',
+  longPressHint: '也可以长按上面的图片保存到相册',
+  storyUnlocked: '拍摄成功，解锁新内容',
+  storyTitle: '镜头背后的故事',
+  storyDiff: '原作 vs 现实',
+  storyStory: '背后的故事',
+  storyFact: '冷知识',
+  storySources: '资料来源',
   shared: '分享成功！',
   cardAnime: '动画',
   cardReal: '现实',
@@ -107,6 +115,13 @@ const en: typeof zh = {
   share: 'Share / Save',
   retake: 'Retake',
   saved: 'Saved to your device',
+  longPressHint: 'You can also long-press the image above to save it',
+  storyUnlocked: 'Unlocked by your shot',
+  storyTitle: 'The story behind the shot',
+  storyDiff: 'Anime vs reality',
+  storyStory: 'Behind the scene',
+  storyFact: 'Fun fact',
+  storySources: 'Sources',
   shared: 'Shared!',
   cardAnime: 'ANIME',
   cardReal: 'REAL',
@@ -122,14 +137,14 @@ const COMPASS: Record<Lang, string[]> = {
 }
 
 const LANG_KEY = 'seichi.lang'
-const initialLang = (): Lang => (localStorage.getItem(LANG_KEY) === 'en' ? 'en' : 'zh')
+const initialLang = (): Lang => (storage.get(LANG_KEY) === 'en' ? 'en' : 'zh')
 
 const LangContext = createContext<{ lang: Lang; setLang: (l: Lang) => void } | null>(null)
 
 export function LangProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>(initialLang)
   const setLang = useCallback((l: Lang) => {
-    localStorage.setItem(LANG_KEY, l)
+    storage.set(LANG_KEY, l)
     setLangState(l)
   }, [])
   useEffect(() => {

@@ -38,6 +38,30 @@ function fitText(ctx: CanvasRenderingContext2D, text: string, weight: number, si
   while (ctx.measureText(text).width > maxW && --s > 16)
 }
 
+/** Greedy line wrap that works for both CJK (break anywhere) and Latin text (break at spaces) */
+function wrapLines(ctx: CanvasRenderingContext2D, text: string, maxW: number, maxLines: number): string[] {
+  const tokens = text.match(/[A-Za-z0-9'’.,;:!?%¥°×()-]+|\s+|./gu) ?? []
+  const lines: string[] = []
+  let line = ''
+  for (const tok of tokens) {
+    const next = line + tok
+    if (ctx.measureText(next).width <= maxW || !line) {
+      line = next
+      continue
+    }
+    lines.push(line.trimEnd())
+    line = tok.trimStart()
+    if (lines.length === maxLines) break
+  }
+  if (lines.length < maxLines && line) lines.push(line.trimEnd())
+  else if (line && lines.length === maxLines) {
+    let last = lines[maxLines - 1]
+    while (ctx.measureText(last + '…').width > maxW) last = last.slice(0, -1)
+    lines[maxLines - 1] = last + '…'
+  }
+  return lines
+}
+
 /** Builds the shareable "anime vs reality" card (Instagram 4:5-ish portrait) */
 export interface CardText {
   title: string
@@ -45,6 +69,8 @@ export interface CardText {
   anime: string
   real: string
   locale: string
+  /** Fun fact printed between the photos and the footer */
+  fact?: string
 }
 
 export async function composeCard(scene: Scene, shotUrl: string, text: CardText): Promise<Blob> {
@@ -57,7 +83,15 @@ export async function composeCard(scene: Scene, shotUrl: string, text: CardText)
   const header = 170
   const gap = 20
   const footer = scene.credit ? 170 : 140
-  const H = header + imgH * 2 + gap + footer
+
+  // Measure the fun-fact block before sizing the canvas
+  const factFont = `500 26px ${FONT}`
+  const factLineH = 38
+  const measure = document.createElement('canvas').getContext('2d')!
+  measure.font = factFont
+  const factLines = text.fact ? wrapLines(measure, text.fact, imgW - 48, 3) : []
+  const factH = factLines.length ? factLines.length * factLineH + 40 + gap : 0
+  const H = header + imgH * 2 + gap + factH + footer
 
   const canvas = document.createElement('canvas')
   canvas.width = W
@@ -91,8 +125,21 @@ export async function composeCard(scene: Scene, shotUrl: string, text: CardText)
   badge(ctx, `${text.anime} · ${scene.year}`, pad + 18, y1 + 18, 'rgba(0,0,0,.6)')
   badge(ctx, `${text.real} · ${new Date().getFullYear()}`, pad + 18, y2 + 18, ACCENT)
 
+  // Fun fact
+  if (factLines.length) {
+    const fy0 = y2 + imgH + gap
+    ctx.fillStyle = 'rgba(232,69,44,.12)'
+    ctx.beginPath()
+    ctx.roundRect(pad, fy0, imgW, factH - gap, 14)
+    ctx.fill()
+    ctx.fillStyle = '#f4f1ea'
+    ctx.font = factFont
+    ctx.textBaseline = 'alphabetic'
+    factLines.forEach((ln, i) => ctx.fillText(ln, pad + 24, fy0 + 20 + 28 + i * factLineH))
+  }
+
   // Footer
-  const fy = y2 + imgH + 64
+  const fy = y2 + imgH + factH + 64
   ctx.textBaseline = 'alphabetic'
   ctx.fillStyle = '#bbb'
   ctx.font = `500 28px ${FONT}`

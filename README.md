@@ -48,3 +48,15 @@ python3 -m venv .venv && .venv/bin/pip install opencv-python-headless numpy
 Then point `frame` / `outline` / `pose` in `src/data/scenes.ts` at the new files, add the `credit`
 (copyright notice) and calibrate `spot` / `heading` on site. `scripts/stitch_quads.py` joins four
 quadrant screenshots into one full-resolution frame.
+
+## Publish to FeedMob Pages
+
+FeedMob Pages serves pages under a CSP sandbox (no `allow-same-origin`) and its multi-file
+storage isn't configured, so we publish one self-contained HTML file:
+
+```bash
+npm run build && .venv/bin/python scripts/inline_build.py        # -> dist-single/index.html
+FEEDMOB_PAGES_TOKEN=... python3 scripts/publish_feedmob.py --page-id a7fd69ff-44fc-47a5-947a-f784f6a3c483
+```
+
+Live at https://pages.feedmob.com/p/clark/seichi-camera (unlisted, FeedMob sign-in required).

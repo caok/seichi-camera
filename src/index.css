@@ -96,7 +96,8 @@ h1, h2, p { margin: 0; }
   aspect-ratio: var(--ar);
   width: min(100vw, calc((100dvh - 340px) * var(--ar)));
 }
-.viewport video { width: 100%; height: 100%; object-fit: cover; transform-origin: center; }
+.viewport video, .viewport .overlay { transform-origin: center; }
+.viewport video { width: 100%; height: 100%; object-fit: cover; }
 .overlay { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 .overlay.outline { filter: drop-shadow(0 0 2px rgba(0,0,0,.8)); }
 .overlay.pose { opacity: .9; filter: drop-shadow(0 0 2px rgba(0,0,0,.6)); }

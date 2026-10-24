@@ -6,6 +6,24 @@ import { setShot } from '../lib/store'
 import { go } from '../router'
 import type { Scene } from '../types'
 
+/** Loads a picked gallery photo and runs it through the same centre-crop as captureFrame */
+function galleryShot(img: HTMLImageElement, aspect: number): string {
+  const vw = img.naturalWidth
+  const vh = img.naturalHeight
+  let sw = vw
+  let sh = vh
+  if (vw / vh > aspect) sw = vh * aspect
+  else sh = vw / aspect
+  const sx = (vw - sw) / 2
+  const sy = (vh - sh) / 2
+  const outW = Math.min(1600, Math.round(sw))
+  const canvas = document.createElement('canvas')
+  canvas.width = outW
+  canvas.height = Math.round(outW / aspect)
+  canvas.getContext('2d')!.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height)
+  return canvas.toDataURL('image/jpeg', 0.9)
+}
+
 type OverlayMode = 'outline' | 'frame' | 'off'
 
 const TIMERS = [0, 3, 10] as const
@@ -13,6 +31,7 @@ type Timer = (typeof TIMERS)[number]
 
 export function CameraPage({ scene }: { scene: Scene }) {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const fileRef = useRef<HTMLInputElement>(null)
   const { t } = useI18n()
   const [error, setError] = useState<'denied' | 'insecure' | 'unsupported' | string | null>(null)
   const [ready, setReady] = useState(false)
@@ -78,6 +97,21 @@ export function CameraPage({ scene }: { scene: Scene }) {
 
   const nextTimer = () => setTimer(TIMERS[(TIMERS.indexOf(timer) + 1) % TIMERS.length])
 
+  const pickFromGallery = () => fileRef.current?.click()
+  const onGalleryPick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = '' // allow re-picking the same file
+    if (!file) return
+    const url = URL.createObjectURL(file)
+    const img = new Image()
+    img.onload = () => {
+      setShot(scene.id, galleryShot(img, scene.aspect))
+      URL.revokeObjectURL(url)
+      go(`/result/${scene.id}`)
+    }
+    img.src = url
+  }
+
   return (
     <div className="camera">
       <header className="camera-top">
@@ -101,12 +135,21 @@ export function CameraPage({ scene }: { scene: Scene }) {
       <Guidance scene={scene} compact />
 
       <div className="viewport" style={{ ['--ar' as string]: scene.aspect }}>
-        {/* Not mirrored even on the front lens, so the scenery lines up with the anime frame */}
+        {/* Not mirrored even on the front lens, so the scenery lines up with the anime frame.
+            The overlays scale with the same zoom as the video, so the outline stays aligned
+            with what captureFrame() will actually crop. */}
         <video ref={videoRef} playsInline muted autoPlay style={{ transform: `scale(${zoom})` }} />
         {mode !== 'off' && (
-          <img className={`overlay ${mode}`} src={mode === 'outline' ? scene.outline : scene.frame} style={{ opacity }} alt="" />
+          <img
+            className={`overlay ${mode}`}
+            src={mode === 'outline' ? scene.outline : scene.frame}
+            style={{ opacity, transform: `scale(${zoom})` }}
+            alt=""
+          />
         )}
-        {showPose && scene.pose && <img className="overlay pose" src={scene.pose} alt="" />}
+        {showPose && scene.pose && (
+          <img className="overlay pose" src={scene.pose} style={{ transform: `scale(${zoom})` }} alt="" />
+        )}
         {countdown != null && (
           <button className="countdown" onClick={() => setCountdown(null)}>
             <span key={countdown}>{countdown}</span>
@@ -120,6 +163,7 @@ export function CameraPage({ scene }: { scene: Scene }) {
           </div>
         )}
         {!error && !ready && <div className="camera-error">{t('startingCamera')}</div>}
+        <input ref={fileRef} type="file" accept="image/*" hidden onChange={onGalleryPick} />
       </div>
 
       {showPose && scene.pose ? (
@@ -144,6 +188,9 @@ export function CameraPage({ scene }: { scene: Scene }) {
           )}
           <button className={`chip ${timer ? 'active' : ''}`} onClick={nextTimer}>
             {timer ? t('timerSec', { s: timer }) : t('timer')}
+          </button>
+          <button className="chip" onClick={pickFromGallery} title={t('galleryHint')}>
+            🖼 {t('gallery')}
           </button>
         </div>
         <label className="slider">

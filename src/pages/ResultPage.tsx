@@ -12,6 +12,7 @@ export function ResultPage({ scene }: { scene: Scene }) {
   const [card, setCard] = useState<{ blob: Blob; url: string } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [wipe, setWipe] = useState(50)
+  const [compareMode, setCompareMode] = useState<'stack' | 'wipe'>('stack')
   // Read before the effect stores the stamp, so StrictMode's double effect doesn't hide the toast
   const [newStamp] = useState(() => !getStamps().includes(scene.id))
   const [status, setStatus] = useState('')
@@ -69,13 +70,39 @@ export function ResultPage({ scene }: { scene: Scene }) {
       )}
 
       <section>
-        <h2 className="section-title">{t('compare')}</h2>
-        <div className="wipe" style={{ ['--ar' as string]: scene.aspect }}>
-          <img src={shot} alt="Your photo" />
-          <img src={scene.frame} alt="Anime frame" style={{ clipPath: `inset(0 ${100 - wipe}% 0 0)` }} />
-          <div className="wipe-line" style={{ left: `${wipe}%` }} />
-          <input type="range" min={0} max={100} value={wipe} onChange={(e) => setWipe(+e.target.value)} aria-label="Compare" />
+        <div className="compare-head">
+          <h2 className="section-title">{t('compare')}</h2>
+          <div className="segmented light small">
+            {(['stack', 'wipe'] as const).map((m) => (
+              <button key={m} className={compareMode === m ? 'active' : ''} onClick={() => setCompareMode(m)}>
+                {t(m === 'stack' ? 'compareStack' : 'compareWipe')}
+              </button>
+            ))}
+          </div>
         </div>
+        {compareMode === 'stack' ? (
+          // Both images shown in full, one above the other
+          <div className="compare-stack" style={{ ['--ar' as string]: scene.aspect }}>
+            <figure>
+              <img src={scene.frame} alt="Anime frame" />
+              <figcaption>{t('cardAnime')} · {scene.year}</figcaption>
+            </figure>
+            <figure>
+              <img src={shot} alt="Your photo" />
+              <figcaption className="real">{t('cardReal')}</figcaption>
+            </figure>
+          </div>
+        ) : (
+          <div className="wipe" style={{ ['--ar' as string]: scene.aspect }}>
+            <img src={shot} alt="Your photo" />
+            <img src={scene.frame} alt="Anime frame" style={{ clipPath: `inset(0 ${100 - wipe}% 0 0)` }} />
+            <div className="wipe-line" style={{ left: `${wipe}%` }}>
+              <span className="wipe-handle">⇔</span>
+            </div>
+            <input type="range" min={0} max={100} value={wipe} onChange={(e) => setWipe(+e.target.value)} aria-label="Compare" />
+          </div>
+        )}
+        {compareMode === 'wipe' && <p className="hint center">{t('wipeHint')}</p>}
       </section>
 
       {scene.story && <StoryCard story={scene.story} />}

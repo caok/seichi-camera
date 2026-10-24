@@ -6,25 +6,38 @@ export type Route =
   | { page: 'camera'; id: string }
   | { page: 'result'; id: string }
 
-function parse(hash: string): Route {
-  const [, page, id] = hash.replace(/^#/, '').split('/')
+/**
+ * The hash looks like `#/scene/<id>~<state>`: the part before `~` is the route, the part after
+ * is persisted app state (see lib/storage.ts) that must survive navigation and reloads.
+ */
+export const STATE_SEP = '~'
+export const routeOf = (hash: string) => hash.replace(/^#/, '').split(STATE_SEP)[0] || '/'
+export const stateOf = (hash: string) => hash.replace(/^#/, '').split(STATE_SEP)[1] ?? ''
+
+function parse(path: string): Route {
+  const [, page, id] = path.split('/')
   if ((page === 'scene' || page === 'camera' || page === 'result') && id) return { page, id }
   return { page: 'home' }
 }
 
 export function useRoute(): Route {
-  const [route, setRoute] = useState(() => parse(location.hash))
+  const [path, setPath] = useState(() => routeOf(location.hash))
   useEffect(() => {
     const onChange = () => {
-      setRoute(parse(location.hash))
-      window.scrollTo(0, 0)
+      const next = routeOf(location.hash)
+      // State-only updates (e.g. a new stamp) keep the same route: don't re-render or scroll
+      setPath((prev) => {
+        if (prev !== next) window.scrollTo(0, 0)
+        return next
+      })
     }
     window.addEventListener('hashchange', onChange)
     return () => window.removeEventListener('hashchange', onChange)
   }, [])
-  return route
+  return parse(path)
 }
 
 export const go = (path: string) => {
-  location.hash = path
+  const state = stateOf(location.hash)
+  location.hash = state ? `${path}${STATE_SEP}${state}` : path
 }

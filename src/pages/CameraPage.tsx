@@ -3,6 +3,7 @@ import { Guidance } from '../components/Guidance'
 import { useI18n } from '../i18n'
 import { CameraError, captureFrame, describeError, openCamera, stopCamera, type Facing } from '../lib/camera'
 import { shotFromGallery } from '../lib/gallery'
+import { unlockAudio } from '../lib/sound'
 import { setShot } from '../lib/store'
 import { go } from '../router'
 import type { Scene } from '../types'
@@ -89,6 +90,7 @@ export function CameraPage({ scene }: { scene: Scene }) {
   }, [countdown])
 
   const onShutter = () => {
+    unlockAudio()
     if (countdown != null) return setCountdown(null)
     if (timer) setCountdown(timer)
     else capture()
@@ -96,7 +98,10 @@ export function CameraPage({ scene }: { scene: Scene }) {
 
   const nextTimer = () => setTimer(TIMERS[(TIMERS.indexOf(timer) + 1) % TIMERS.length])
 
-  const pickFromGallery = () => fileRef.current?.click()
+  const pickFromGallery = () => {
+    unlockAudio()
+    fileRef.current?.click()
+  }
   const onGalleryPick = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     e.target.value = '' // allow re-picking the same file

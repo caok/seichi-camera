@@ -159,6 +159,9 @@ h1, h2, p { margin: 0; }
 .wipe input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; margin: 0; cursor: ew-resize; }
 .story-card { background: linear-gradient(160deg, #2a1d22, var(--surface) 60%); border: 1px solid #4a2c2a; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px; animation: reveal .6s ease-out .3s both; }
 .story-card h2 { font-size: 18px; }
+.story-head { display: flex; justify-content: space-between; align-items: center; }
+.sound-toggle { border: none; background: rgba(255,255,255,.08); border-radius: 999px; width: 32px; height: 32px; font-size: 15px; }
+.trailer-btn { flex: 0; align-self: flex-start; padding: 10px 14px; font-size: 14px; background: rgba(255,0,0,.12); border-color: rgba(255,80,80,.4); }
 .story-unlock { color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .06em; }
 .story-row { display: flex; gap: 10px; }
 .story-icon { font-size: 20px; line-height: 1.3; }

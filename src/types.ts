@@ -18,6 +18,8 @@ export interface SceneStory {
   /** One-liner also printed on the share card */
   fact: L10n
   sources: { label: string; url: string }[]
+  /** Official trailer on YouTube and the second where this scene appears */
+  trailer?: { videoId: string; t: number }
 }
 
 export interface Scene {

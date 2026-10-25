@@ -3,6 +3,7 @@ import { Guidance } from '../components/Guidance'
 import { LangToggle, useI18n } from '../i18n'
 import { shotFromGallery } from '../lib/gallery'
 import { mapsUrl } from '../lib/geo'
+import { unlockAudio } from '../lib/sound'
 import { go } from '../router'
 import type { Scene } from '../types'
 
@@ -55,7 +56,13 @@ export function ScenePage({ scene }: { scene: Scene }) {
           {t('lineUp')}
         </button>
       </div>
-      <button className="gallery-link" onClick={() => fileRef.current?.click()}>
+      <button
+        className="gallery-link"
+        onClick={() => {
+          unlockAudio()
+          fileRef.current?.click()
+        }}
+      >
         🖼 {t('galleryFromScene')}
       </button>
       <input ref={fileRef} type="file" accept="image/*" hidden onChange={onPick} />

@@ -20,6 +20,7 @@ export const stories: Record<string, SceneStory> = {
       { label: 'アニヲタWiki', url: 'https://w.atwiki.jp/aniwotawiki/pages/30190.html' },
       { label: 'allcinema', url: 'https://www.allcinema.net/cinema/347764' },
     ],
+    trailer: { videoId: '6b9KzTgx0sU', t: 9 },
   },
   'shibuya-jujutsu': {
     diff: {
@@ -40,6 +41,7 @@ export const stories: Record<string, SceneStory> = {
       { label: 'anime-pilgrimage.com', url: 'https://anime-pilgrimage.com/jujutsu-kaisen/' },
       { label: 'ピクシブ百科事典', url: 'https://dic.pixiv.net/a/%E6%B8%8B%E8%B0%B7%E4%BA%8B%E5%A4%89' },
     ],
+    trailer: { videoId: 'PKHQuQF1S8k', t: 9 },
   },
   'akiba-steinsgate': {
     diff: {
@@ -59,6 +61,7 @@ export const stories: Record<string, SceneStory> = {
       { label: 'アキバ経済新聞', url: 'https://akiba.keizai.biz/headline/2613/' },
       { label: 'AKIBA PC Hotline!', url: 'https://akiba-pc.watch.impress.co.jp/hotline/20111029/etc_rajikan.html' },
     ],
+    trailer: { videoId: '27OZc-ku6is', t: 24 },
   },
   'ochanomizu-suzume': {
     diff: {
@@ -78,6 +81,7 @@ export const stories: Record<string, SceneStory> = {
       { label: 'NEWT', url: 'https://newt.net/jpn/mag-00703739081' },
       { label: 'TOKYO TRIP', url: 'https://tokyo-trip.org/spot/visiting/tk1069/' },
     ],
+    trailer: { videoId: 'FVU0zESXS5c', t: 72 },
   },
   'gyoen-kotonoha': {
     diff: {
@@ -98,6 +102,7 @@ export const stories: Record<string, SceneStory> = {
       { label: 'FotoReiser', url: 'https://alan-d-haller.info/travel_jp/thegardenofwords/' },
       { label: 'まとめまめ', url: 'https://matomame.jp/user/ELI_AYASE/caa37731c3e20927b8e0' },
     ],
+    trailer: { videoId: 'udDIkl6z8X0', t: 70 },
   },
   'shimokita-bocchi': {
     diff: {
@@ -117,6 +122,7 @@ export const stories: Record<string, SceneStory> = {
       { label: 'しもブロ', url: 'https://www.shimokitazawa.info/news/2023/01/bocchitherocks-location/' },
       { label: 'Tabist', url: 'https://magazine.tabist.co.jp/other/14935/' },
     ],
+    trailer: { videoId: 'nomJbjuQXAY', t: 43 },
   },
   'akiba-lovelive': {
     diff: {
@@ -136,6 +142,7 @@ export const stories: Record<string, SceneStory> = {
       { label: 'LIVE BOARD', url: 'https://liveboard.co.jp/screen/001530.html' },
       { label: 'akihabaraevent.com', url: 'https://www.akihabaraevent.com/loveca-kanshasai-2026/' },
     ],
+    trailer: { videoId: 't_lkr985xoQ', t: 40 },
   },
   'shinjuku-tenki': {
     diff: {
@@ -155,6 +162,7 @@ export const stories: Record<string, SceneStory> = {
       { label: 'jpcmap', url: 'https://jpcmap.com/entame/shinkai/tenkinoko_shinjuku' },
       { label: 'LIBERT', url: 'https://libert.co.jp/pilgrimage-guild/weatheringwithyou-pilgrimage/' },
     ],
+    trailer: { videoId: 'VGksHFs04Rc', t: 56 },
   },
   'sangubashi-byosoku': {
     diff: {
@@ -174,5 +182,6 @@ export const stories: Record<string, SceneStory> = {
       { label: 'anime-pilgrimage.com', url: 'https://anime-pilgrimage.com/five-centimeters-per-second/' },
       { label: 'Yatsugatake Information Wall', url: 'https://yatsugatake.info/?p=5206' },
     ],
+    trailer: { videoId: '1X95eE2fwuc', t: 17 },
   },
 }

@@ -92,7 +92,7 @@ h1, h2, p { margin: 0; }
 .camera-title { display: flex; flex-direction: column; flex: 1; min-width: 0; }
 .camera-title small { color: var(--muted); }
 .viewport {
-  position: relative; overflow: hidden; background: #111; flex-shrink: 0;
+  position: relative; overflow: hidden; background: #111; flex-shrink: 0; margin-top: auto;
   aspect-ratio: var(--ar);
   width: min(100vw, calc((100dvh - 340px) * var(--ar)));
 }
@@ -113,18 +113,19 @@ h1, h2, p { margin: 0; }
 .flash { position: absolute; inset: 0; background: #fff; animation: flash .2s ease-out forwards; }
 @keyframes flash { from { opacity: 1 } to { opacity: 0 } }
 
-.controls { margin-top: auto; width: 100%; max-width: 560px; display: grid; grid-template-columns: 1fr auto; grid-template-areas: 'seg shutter' 'chips shutter' 'op shutter' 'zoom shutter'; gap: 8px 16px; padding: 4px 16px 12px; align-items: center; }
-.controls .segmented { grid-area: seg; justify-self: start; }
-.chips { grid-area: chips; display: flex; gap: 8px; }
+.controls { margin-top: auto; width: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 10px; padding: 4px 16px calc(14px + env(safe-area-inset-bottom)); }
+.controls-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
 .chip { border: 1px solid #444; background: rgba(255,255,255,.08); border-radius: 999px; padding: 6px 12px; font-size: 13px; font-weight: 600; }
 .chip.active { background: var(--text); color: var(--bg); border-color: var(--text); }
 .chip.pose.active { background: #ff3b30; color: #fff; border-color: #ff3b30; }
-.controls .slider:nth-of-type(1) { grid-area: op; }
-.controls .slider:nth-of-type(2) { grid-area: zoom; }
 .slider { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
 .slider span { width: 74px; }
 .slider input { flex: 1; accent-color: var(--accent); }
-.shutter { grid-area: shutter; width: 72px; height: 72px; border-radius: 50%; border: 5px solid #fff; background: var(--accent); box-shadow: 0 0 0 3px rgba(0,0,0,.4) inset; }
+.shutter-row { display: flex; align-items: center; justify-content: space-evenly; margin-top: 4px; }
+.round-btn { position: relative; width: 48px; height: 48px; border-radius: 50%; border: none; background: rgba(255,255,255,.12); font-size: 20px; display: grid; place-items: center; }
+.round-btn.active { background: var(--text); color: var(--bg); }
+.round-btn small { position: absolute; bottom: -18px; font-size: 11px; font-weight: 700; color: var(--text); }
+.shutter { width: 76px; height: 76px; border-radius: 50%; border: 5px solid #fff; background: var(--accent); box-shadow: 0 0 0 3px rgba(0,0,0,.4) inset; flex-shrink: 0; }
 .shutter:active { transform: scale(.94); }
 .shutter:disabled { opacity: .4; }
 .shutter.counting { background: #fff; }
@@ -156,19 +157,19 @@ h1, h2, p { margin: 0; }
     max-width: none;
     margin: 0;
     padding: 4px 12px 10px;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: 'seg' 'chips' 'op' 'zoom' 'shutter';
-    align-content: center;
-    justify-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 10px;
     overflow-y: auto;
   }
+  .controls-top { flex-direction: column; justify-content: center; }
   .controls .slider { width: 100%; min-width: 0; }
   .controls .slider span { width: 62px; flex-shrink: 0; }
   .controls .slider input { min-width: 0; }
-  .controls .chips { flex-wrap: wrap; justify-content: center; }
   .controls .segmented button { padding: 6px 12px; }
+  .shutter-row { justify-content: space-between; margin-top: 0; }
+  .round-btn { width: 42px; height: 42px; font-size: 17px; }
   .shutter { width: 64px; height: 64px; }
+  .viewport { margin-top: 0; }
 }
 
 /* Result */

@@ -119,14 +119,6 @@ export function CameraPage({ scene }: { scene: Scene }) {
           <strong>{scene.titleJa}</strong>
           <small>{scene.workJa}</small>
         </div>
-        <button
-          className="icon-btn flip"
-          onClick={() => setFacing(facing === 'environment' ? 'user' : 'environment')}
-          aria-label={t('flipCamera')}
-          title={t('flipCamera')}
-        >
-          ⟲
-        </button>
       </header>
 
       <Guidance scene={scene} compact />
@@ -179,22 +171,19 @@ export function CameraPage({ scene }: { scene: Scene }) {
       )}
 
       <div className="controls">
-        <div className="segmented">
-          {(['outline', 'frame', 'off'] as const).map((m) => (
-            <button key={m} className={mode === m ? 'active' : ''} onClick={() => setMode(m)}>
-              {t(m === 'outline' ? 'outline' : m === 'frame' ? 'anime' : 'off')}
-            </button>
-          ))}
-        </div>
-        <div className="chips">
+        <div className="controls-top">
+          <div className="segmented">
+            {(['outline', 'frame', 'off'] as const).map((m) => (
+              <button key={m} className={mode === m ? 'active' : ''} onClick={() => setMode(m)}>
+                {t(m === 'outline' ? 'outline' : m === 'frame' ? 'anime' : 'off')}
+              </button>
+            ))}
+          </div>
           {scene.pose && (
             <button className={`chip pose ${showPose ? 'active' : ''}`} onClick={() => setShowPose(!showPose)} aria-pressed={showPose}>
               🧍 {t('pose')}
             </button>
           )}
-          <button className={`chip ${timer ? 'active' : ''}`} onClick={nextTimer}>
-            {timer ? t('timerSec', { s: timer }) : t('timer')}
-          </button>
         </div>
         <label className="slider">
           <span>{t('overlay')}</span>
@@ -204,7 +193,21 @@ export function CameraPage({ scene }: { scene: Scene }) {
           <span>{t('zoom', { z: zoom.toFixed(1) })}</span>
           <input type="range" min={1} max={3} step={0.1} value={zoom} onChange={(e) => setZoom(+e.target.value)} />
         </label>
-        <button className={`shutter ${countdown != null ? 'counting' : ''}`} onClick={onShutter} disabled={!ready} aria-label={t('takePhoto')} />
+        {/* Like a phone camera: timer · shutter · flip */}
+        <div className="shutter-row">
+          <button className={`round-btn ${timer ? 'active' : ''}`} onClick={nextTimer} aria-label={t('timer')} title={t('timer')}>
+            ⏱{timer > 0 && <small>{timer}s</small>}
+          </button>
+          <button className={`shutter ${countdown != null ? 'counting' : ''}`} onClick={onShutter} disabled={!ready} aria-label={t('takePhoto')} />
+          <button
+            className="round-btn"
+            onClick={() => setFacing(facing === 'environment' ? 'user' : 'environment')}
+            aria-label={t('flipCamera')}
+            title={t('flipCamera')}
+          >
+            ⟲
+          </button>
+        </div>
       </div>
     </div>
   )

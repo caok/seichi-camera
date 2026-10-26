@@ -49,6 +49,8 @@ export interface Scene {
   credit?: string
   /** exact = the real place looks like the frame; vibe = recreated / fictionalised place */
   matchType: 'exact' | 'vibe'
+  /** Nearest station + walking time, shown on the scene page */
+  access?: { station: string; walkMin: number }
   description: L10n
   tips: L10n[]
   story?: SceneStory

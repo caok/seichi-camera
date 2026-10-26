@@ -38,6 +38,11 @@ export function ScenePage({ scene }: { scene: Scene }) {
           {l(scene.title)} <span className="muted">— {l(scene.work)}</span>
         </h2>
         <span className={`tag ${scene.matchType}`}>{t(scene.matchType === 'exact' ? 'exactSpot' : 'vibeMatch')}</span>
+        {scene.access && (
+          <p className="access">
+            🚉 {t('accessLine', { station: scene.access.station, min: scene.access.walkMin })}
+          </p>
+        )}
         <p>{l(scene.description)}</p>
         <ul className="tips">
           {scene.tips.map((tip) => (

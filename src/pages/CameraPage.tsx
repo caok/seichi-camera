@@ -13,6 +13,10 @@ type OverlayMode = 'outline' | 'frame' | 'off'
 const TIMERS = [0, 3, 10] as const
 type Timer = (typeof TIMERS)[number]
 
+/** Overlay nudge state: offset in px (of the rendered overlay) and extra scale on top of camera zoom. */
+type Nudge = { dx: number; dy: number; s: number }
+const NUDGE_NONE: Nudge = { dx: 0, dy: 0, s: 1 }
+
 export function CameraPage({ scene }: { scene: Scene }) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -24,6 +28,7 @@ export function CameraPage({ scene }: { scene: Scene }) {
   const [showPose, setShowPose] = useState(Boolean(scene.pose))
   const [opacity, setOpacity] = useState(0.7)
   const [zoom, setZoom] = useState(1)
+  const [nudge, setNudge] = useState<Nudge>(NUDGE_NONE)
   const [timer, setTimer] = useState<Timer>(0)
   const [countdown, setCountdown] = useState<number | null>(null)
   const [flash, setFlash] = useState(false)
@@ -98,6 +103,38 @@ export function CameraPage({ scene }: { scene: Scene }) {
 
   const nextTimer = () => setTimer(TIMERS[(TIMERS.indexOf(timer) + 1) % TIMERS.length])
 
+  // ---- Overlay nudge: one-finger drag to move, pinch to scale, double-tap to reset ----
+  // Purely a viewfinder alignment aid: captureFrame() crops the video, not the overlay,
+  // so nudging can never distort the saved photo.
+  const gesture = useRef<{ active: boolean; x0: number; y0: number; dx0: number; dy0: number; pinch: null | { d0: number; s0: number } }>({ active: false, x0: 0, y0: 0, dx0: 0, dy0: 0, pinch: null })
+  const lastTap = useRef(0)
+  const onGestureStart = (e: React.PointerEvent) => {
+    if (mode === 'off') return
+    gesture.current.active = true
+    gesture.current.x0 = e.clientX
+    gesture.current.y0 = e.clientY
+    gesture.current.dx0 = nudge.dx
+    gesture.current.dy0 = nudge.dy
+    if (e.pointerType === 'touch') (e.target as HTMLElement).setPointerCapture?.(e.pointerId)
+  }
+  const onGestureMove = (e: React.PointerEvent) => {
+    if (!gesture.current.active) return
+    setNudge((n) => ({ ...n, dx: gesture.current.dx0 + (e.clientX - gesture.current.x0), dy: gesture.current.dy0 + (e.clientY - gesture.current.y0) }))
+  }
+  const onGestureEnd = () => { gesture.current.active = false }
+  const onWheel = (e: React.WheelEvent) => {
+    if (mode === 'off') return
+    e.preventDefault()
+    setNudge((n) => ({ ...n, s: Math.min(2.5, Math.max(0.5, n.s * (e.deltaY < 0 ? 1.05 : 0.95))) }))
+  }
+  const onDoubleTap = () => {
+    const now = Date.now()
+    if (now - lastTap.current < 300) setNudge(NUDGE_NONE)
+    lastTap.current = now
+  }
+
+  const overlayTransform = `translate(${nudge.dx}px, ${nudge.dy}px) scale(${zoom * nudge.s})`
+
   const pickFromGallery = () => {
     unlockAudio()
     fileRef.current?.click()
@@ -123,21 +160,31 @@ export function CameraPage({ scene }: { scene: Scene }) {
 
       <Guidance scene={scene} compact />
 
-      <div className="viewport" style={{ ['--ar' as string]: scene.aspect }}>
+      <div
+        className="viewport nudgeable"
+        style={{ ['--ar' as string]: scene.aspect, ['touchAction' as string]: 'none' }}
+        onPointerDown={onGestureStart}
+        onPointerMove={onGestureMove}
+        onPointerUp={onGestureEnd}
+        onPointerCancel={onGestureEnd}
+        onWheel={onWheel}
+        onClick={onDoubleTap}
+      >
         {/* Not mirrored even on the front lens, so the scenery lines up with the anime frame.
             The overlays scale with the same zoom as the video, so the outline stays aligned
-            with what captureFrame() will actually crop. */}
+            with what captureFrame() will actually crop. Drag/pinch the viewport to nudge
+            the overlay when the spot/heading is slightly off; double-tap resets. */}
         <video ref={videoRef} playsInline muted autoPlay style={{ transform: `scale(${zoom})` }} />
         {mode !== 'off' && (
           <img
             className={`overlay ${mode}`}
             src={mode === 'outline' ? scene.outline : scene.frame}
-            style={{ opacity, transform: `scale(${zoom})` }}
+            style={{ opacity, transform: overlayTransform }}
             alt=""
           />
         )}
         {showPose && scene.pose && (
-          <img className="overlay pose" src={scene.pose} style={{ transform: `scale(${zoom})` }} alt="" />
+          <img className="overlay pose" src={scene.pose} style={{ transform: overlayTransform }} alt="" />
         )}
         {countdown != null && (
           <button className="countdown" onClick={() => setCountdown(null)}>
@@ -193,6 +240,12 @@ export function CameraPage({ scene }: { scene: Scene }) {
           <span>{t('zoom', { z: zoom.toFixed(1) })}</span>
           <input type="range" min={1} max={3} step={0.1} value={zoom} onChange={(e) => setZoom(+e.target.value)} />
         </label>
+        {(nudge.dx !== 0 || nudge.dy !== 0 || nudge.s !== 1) && (
+          <button className="chip" onClick={() => setNudge(NUDGE_NONE)}>
+            ⟲ {t('resetNudge')}
+          </button>
+        )}
+        <p className="hint nudge-hint">{t('nudgeHint')}</p>
         {/* Like a phone camera: timer · shutter · flip */}
         <div className="shutter-row">
           <button className={`round-btn ${timer ? 'active' : ''}`} onClick={nextTimer} aria-label={t('timer')} title={t('timer')}>

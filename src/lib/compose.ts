@@ -71,6 +71,8 @@ export interface CardText {
   locale: string
   /** Fun fact printed between the photos and the footer */
   fact?: string
+  /** e.g. "对齐度 82%", drawn on the real photo */
+  align?: string
 }
 
 export async function composeCard(scene: Scene, shotUrl: string, text: CardText): Promise<Blob> {
@@ -124,6 +126,11 @@ export async function composeCard(scene: Scene, shotUrl: string, text: CardText)
   ctx.restore()
   badge(ctx, `${text.anime} · ${scene.year}`, pad + 18, y1 + 18, 'rgba(0,0,0,.6)')
   badge(ctx, `${text.real} · ${new Date().getFullYear()}`, pad + 18, y2 + 18, ACCENT)
+  if (text.align) {
+    ctx.font = `700 26px ${FONT}` // same font badge() uses
+    const w = ctx.measureText(text.align).width + 32
+    badge(ctx, text.align, pad + imgW - 18 - w, y2 + 18, 'rgba(0,0,0,.7)')
+  }
 
   // Fun fact
   if (factLines.length) {

@@ -181,6 +181,16 @@ h1, h2, p { margin: 0; }
 .stamp-toast .stamp { border: 2px solid var(--accent); color: var(--accent); transform: rotate(-12deg); }
 @keyframes pop { from { transform: scale(.9); opacity: 0 } to { transform: scale(1); opacity: 1 } }
 
+.align { display: flex; align-items: center; gap: 16px; padding: 14px 16px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); position: relative; }
+.align-ring { width: 76px; height: 76px; transform: rotate(-90deg); flex-shrink: 0; }
+.align-ring circle { fill: none; stroke-width: 7; }
+.align-ring .track { stroke: var(--line); }
+.align-ring .value { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1); }
+.align-num { position: absolute; left: 16px; width: 76px; text-align: center; font-size: 24px; font-weight: 800; }
+.align-text { display: flex; flex-direction: column; gap: 2px; }
+.align-text small { color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: .06em; }
+.align-text strong { font-size: 19px; }
+.align-text p { color: var(--muted); font-size: 13px; line-height: 1.5; margin-top: 2px; }
 .compare-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .compare-head .section-title { margin: 0; }
 .segmented.small button { padding: 5px 12px; font-size: 13px; }

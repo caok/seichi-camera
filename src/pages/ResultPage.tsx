@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
+import { AlignScore } from '../components/AlignScore'
 import { StoryCard } from '../components/StoryCard'
 import { LangToggle, useI18n } from '../i18n'
+import { alignScore, type AlignResult } from '../lib/align'
 import { composeCard, shareOrDownload } from '../lib/compose'
 import { addStamp, getShot, getStamps } from '../lib/store'
 import { go } from '../router'
@@ -16,6 +18,20 @@ export function ResultPage({ scene }: { scene: Scene }) {
   // Read before the effect stores the stamp, so StrictMode's double effect doesn't hide the toast
   const [newStamp] = useState(() => !getStamps().includes(scene.id))
   const [status, setStatus] = useState('')
+  // undefined = computing, null = failed
+  const [align, setAlign] = useState<AlignResult | null | undefined>(undefined)
+
+  useEffect(() => {
+    if (!shot) return
+    let cancelled = false
+    alignScore(shot, scene.outline, scene.frame).then(
+      (r) => !cancelled && setAlign(r),
+      () => !cancelled && setAlign(null),
+    )
+    return () => {
+      cancelled = true
+    }
+  }, [shot, scene])
 
   const cardText = {
     title: l(scene.title),
@@ -24,6 +40,7 @@ export function ResultPage({ scene }: { scene: Scene }) {
     real: t('cardReal'),
     locale: lang === 'zh' ? 'zh-CN' : 'en-US',
     fact: scene.story ? `💡 ${l(scene.story.fact)}` : undefined,
+    align: align ? `${t('alignTitle')} ${align.score}%` : undefined,
   }
   const cardKey = JSON.stringify(cardText)
 
@@ -33,6 +50,7 @@ export function ResultPage({ scene }: { scene: Scene }) {
       return
     }
     addStamp(scene.id)
+    if (align === undefined) return // wait for the score so it can go on the card
     let url = ''
     composeCard(scene, shot, JSON.parse(cardKey))
       .then((blob) => {
@@ -43,7 +61,7 @@ export function ResultPage({ scene }: { scene: Scene }) {
     return () => {
       if (url) URL.revokeObjectURL(url)
     }
-  }, [scene, shot, cardKey])
+  }, [scene, shot, cardKey, align])
 
   if (!shot) return null
 
@@ -68,6 +86,8 @@ export function ResultPage({ scene }: { scene: Scene }) {
           <span className="stamp">印</span> {t('stampCollected', { name: l(scene.title) })}
         </div>
       )}
+
+      <AlignScore result={align} />
 
       <section>
         <div className="compare-head">

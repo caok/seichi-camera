@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>圣地巡礼相机 Seichi Camera · 站到主角站过的地方</title>
+    <meta name="description" content="把东京 9 个动漫名场面的原作画面叠进取景框——对准、按下快门，生成「动画 vs 现实」对比卡，再解锁镜头背后的故事。手机浏览器打开即用。" />
+    <meta name="theme-color" content="#111014" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="圣地巡礼相机 Seichi Camera" />
+    <meta property="og:description" content="站到动画主角站过的地方，拍下属于你的那一幕。9 个东京动漫名场面，手机浏览器打开即用。" />
+    <meta property="og:image" content="https://caok.github.io/seichi-camera/about/og.jpg" />
+    <meta property="og:url" content="https://caok.github.io/seichi-camera/about.html" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <style>
+      :root {
+        --bg: #0f0e13;
+        --surface: #1a1820;
+        --line: #2c2934;
+        --text: #f4f1ea;
+        --muted: #a49eae;
+        --accent: #e8452c;
+        font-family: -apple-system, 'Hiragino Sans', 'PingFang SC', 'Noto Sans JP', 'Helvetica Neue', sans-serif;
+        color: var(--text);
+        background: var(--bg);
+        -webkit-font-smoothing: antialiased;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; }
+      a { color: inherit; }
+      img, video { display: block; max-width: 100%; }
+      h1, h2, h3, p { margin: 0; }
+      .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+      .eyebrow { color: var(--accent); font-weight: 700; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; }
+      .muted { color: var(--muted); }
+      .btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 22px; border-radius: 999px; font-weight: 700; text-decoration: none; border: 1px solid var(--line); background: var(--surface); transition: transform .15s; }
+      .btn:hover { transform: translateY(-2px); }
+      .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 10px 30px rgba(232, 69, 44, .35); }
+
+      /* Nav */
+      nav { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(14px); background: rgba(15, 14, 19, .75); border-bottom: 1px solid var(--line); }
+      nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+      .brand { display: flex; align-items: baseline; gap: 10px; text-decoration: none; }
+      .brand b { font-size: 18px; }
+      .brand span { color: var(--accent); font-size: 12px; font-weight: 700; }
+      .nav-links { display: flex; gap: 22px; align-items: center; font-size: 14px; }
+      .nav-links a { text-decoration: none; color: var(--muted); }
+      .nav-links a.btn { color: #fff; padding: 9px 16px; }
+      .brand b, .nav-links .btn { white-space: nowrap; }
+      @media (max-width: 720px) { .nav-links a:not(.btn) { display: none; } }
+      @media (max-width: 420px) { .brand span { display: none; } }
+
+      /* Hero */
+      .hero { position: relative; overflow: hidden; }
+      .hero::before { content: ''; position: absolute; inset: 0; background: url('./about/og.jpg') center/cover; opacity: .14; filter: blur(30px); transform: scale(1.2); }
+      .hero .wrap { position: relative; display: grid; grid-template-columns: 1.15fr .85fr; gap: 56px; align-items: center; padding-top: 72px; padding-bottom: 80px; }
+      .hero h1 .line { display: block; white-space: nowrap; }
+      .hero h1 { font-size: clamp(30px, 4.4vw, 56px); line-height: 1.15; letter-spacing: -.01em; margin: 14px 0 20px; }
+      .hero h1 em { font-style: normal; color: var(--accent); }
+      .hero p.lead { font-size: 18px; line-height: 1.75; color: #d8d3de; max-width: 560px; }
+      .hero .ctas { display: flex; gap: 12px; flex-wrap: wrap; margin: 30px 0 18px; }
+      .hero .note { font-size: 13px; color: var(--muted); }
+      .phone { position: relative; width: min(340px, 80vw); margin: 0 auto; aspect-ratio: 9 / 16; border-radius: 42px; padding: 10px; background: #2a2730; border: 2px solid #4a4652; box-shadow: 0 40px 80px rgba(0, 0, 0, .55), 0 0 0 1px rgba(255, 255, 255, .04) inset; }
+      .phone video { width: 100%; height: 100%; object-fit: cover; border-radius: 32px; background: #000; }
+      .sound { position: absolute; right: 22px; bottom: 22px; border: none; border-radius: 999px; padding: 8px 14px; font-weight: 700; font-size: 13px; background: rgba(0, 0, 0, .65); color: #fff; cursor: pointer; }
+      @media (max-width: 860px) {
+        .hero .wrap { grid-template-columns: 1fr; padding-top: 40px; gap: 40px; text-align: center; }
+        .hero p.lead { margin: 0 auto; }
+        .hero .ctas { justify-content: center; }
+      }
+
+      /* Stats */
+      .stats { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #13121a; }
+      .stats .wrap { display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; padding-top: 26px; padding-bottom: 26px; }
+      .stats b { display: block; font-size: 34px; color: var(--accent); }
+      .stats span { font-size: 13px; color: var(--muted); }
+      @media (max-width: 600px) { .stats .wrap { grid-template-columns: repeat(2, 1fr); row-gap: 20px; } }
+
+      section.block { padding: 88px 0; }
+      .head { text-align: center; max-width: 680px; margin: 0 auto 44px; }
+      .head h2 { font-size: clamp(28px, 3.6vw, 40px); margin: 10px 0 12px; }
+      .head p { color: var(--muted); line-height: 1.7; }
+
+      /* Problem */
+      .pains { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+      .pain { padding: 26px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line); }
+      .pain .q { font-size: 20px; font-weight: 800; margin-bottom: 10px; }
+      .pain .a { color: var(--muted); line-height: 1.7; font-size: 15px; }
+      .pain .a b { color: var(--text); }
+
+      /* Steps */
+      .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+      .step { text-align: center; }
+      .step .shot { aspect-ratio: 375 / 600; border-radius: 26px; overflow: hidden; border: 1px solid var(--line); background: #000; margin-bottom: 18px; box-shadow: 0 20px 40px rgba(0, 0, 0, .4); }
+      .step .shot img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+      .step .n { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 800; font-size: 14px; margin-bottom: 10px; }
+      .step h3 { font-size: 20px; margin-bottom: 6px; }
+      .step p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+      /* Features */
+      .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+      .feature { padding: 24px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); }
+      .feature i { font-style: normal; font-size: 28px; }
+      .feature h3 { font-size: 18px; margin: 12px 0 8px; }
+      .feature p { color: var(--muted); font-size: 14px; line-height: 1.65; }
+      @media (max-width: 860px) {
+        .pains, .steps, .features { grid-template-columns: 1fr; }
+        .steps .shot { max-width: 300px; margin-left: auto; margin-right: auto; }
+      }
+
+      /* Scenes */
+      .scenes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+      .scene { position: relative; border-radius: 16px; overflow: hidden; aspect-ratio: 16 / 9; }
+      .scene img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+      .scene:hover img { transform: scale(1.06); }
+      .scene figcaption { position: absolute; inset: auto 0 0 0; padding: 44px 14px 12px; background: linear-gradient(transparent, rgba(0, 0, 0, .7) 40%, rgba(0, 0, 0, .92)); text-shadow: 0 1px 3px rgba(0, 0, 0, .8); }
+      .scene small { color: #ff7a63; font-weight: 700; font-size: 12px; }
+      .scene strong { display: block; font-size: 15px; }
+      .scene span { font-size: 12px; color: #cfc9d6; }
+      @media (max-width: 860px) { .scenes { grid-template-columns: repeat(2, 1fr); } }
+      @media (max-width: 520px) { .scenes { grid-template-columns: 1fr; } }
+
+      /* CTA */
+      .cta { text-align: center; padding: 96px 0 110px; background: radial-gradient(ellipse at center, rgba(232, 69, 44, .18), transparent 65%); }
+      .cta h2 { font-size: clamp(30px, 4vw, 46px); margin: 10px 0 14px; }
+      .qr { width: 220px; margin: 34px auto 18px; padding: 14px; border-radius: 22px; background: #fff; }
+      .cta .url { font-size: 15px; color: var(--muted); }
+
+      footer { border-top: 1px solid var(--line); padding: 30px 0 42px; color: var(--muted); font-size: 13px; line-height: 1.8; }
+      footer .wrap { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="wrap">
+        <a class="brand" href="#top"><b>Seichi Camera</b><span>聖地巡礼カメラ</span></a>
+        <div class="nav-links">
+          <a href="#how">怎么玩</a>
+          <a href="#features">功能</a>
+          <a href="#scenes">场景</a>
+          <a class="btn primary" href="./">打开 App</a>
+        </div>
+      </div>
+    </nav>
+
+    <header class="hero" id="top">
+      <div class="wrap">
+        <div>
+          <p class="eyebrow">Tokyo · Anime Pilgrimage</p>
+          <h1><span class="line">站到主角站过的地方，</span><span class="line">拍下<em>属于你的那一幕</em>。</span></h1>
+          <p class="lead">
+            圣地巡礼相机把东京 9 个动漫名场面的原作画面叠进你的取景框——对准、按下快门，生成「动画 vs 现实」对比卡，再解锁这个机位背后的故事。
+          </p>
+          <div class="ctas">
+            <a class="btn primary" href="./">📷 立即体验</a>
+            <a class="btn" href="#video">▶ 看 30 秒介绍</a>
+          </div>
+          <p class="note">手机浏览器打开即用 · 无需安装 · 中文 / English</p>
+        </div>
+        <div id="video">
+          <div class="phone">
+            <video id="promo" src="./about/promo.mp4" poster="./about/poster.jpg" autoplay muted loop playsinline preload="metadata"></video>
+            <button class="sound" id="sound" type="button">🔇 开启声音</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="stats">
+      <div class="wrap">
+        <div><b>9</b><span>东京动漫名场面</span></div>
+        <div><b>0</b><span>需要安装的 App</span></div>
+        <div><b>2</b><span>语言：中文 / English</span></div>
+        <div><b>100%</b><span>故事卡事实附出处</span></div>
+      </div>
+    </div>
+
+    <section class="block">
+      <div class="wrap">
+        <div class="head">
+          <p class="eyebrow">The problem</p>
+          <h2>到了圣地，然后呢？</h2>
+          <p>每年都有大量游客专程来东京寻找动画里的场景，但真到了现场，常常会遇到这三个问题。</p>
+        </div>
+        <div class="pains">
+          <div class="pain"><p class="q">“机位到底在哪？”</p><p class="a">原作角度很难找，拍出来总差点意思。<br /><b>→ 原作线稿叠在取景框里，照着对准就行。</b></p></div>
+          <div class="pain"><p class="q">“一个人拍不了同款”</p><p class="a">想站进画面里，却没人帮你对位。<br /><b>→ 红色人物轮廓 + 自拍定时 + 前后镜头。</b></p></div>
+          <div class="pain"><p class="q">“拍完就结束了”</p><p class="a">不懂作品的同伴，不知道这里为什么特别。<br /><b>→ 拍完解锁「镜头背后的故事」。</b></p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="how" style="background:#13121a">
+      <div class="wrap">
+        <div class="head">
+          <p class="eyebrow">How it works</p>
+          <h2>三步，拍出原作同款</h2>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <div class="shot"><img src="./about/screen-home.jpg" alt="选择场景" loading="lazy" /></div>
+            <span class="n">1</span>
+            <h3>选一个名场面</h3>
+            <p>列表或地图里挑场景，一键导航步行前往。</p>
+          </div>
+          <div class="step">
+            <div class="shot"><img src="./about/screen-camera-frame.jpg" alt="叠加取景" loading="lazy" /></div>
+            <span class="n">2</span>
+            <h3>对准原作，按下快门</h3>
+            <p>线稿 / 原画半透明叠加，人物站位告诉你站哪。</p>
+          </div>
+          <div class="step">
+            <div class="shot"><img src="./about/screen-card.jpg" alt="对比卡" loading="lazy" /></div>
+            <span class="n">3</span>
+            <h3>生成对比卡，解锁故事</h3>
+            <p>「动画 vs 现实」对比卡一键分享，还能集印章。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="features">
+      <div class="wrap">
+        <div class="head">
+          <p class="eyebrow">Features</p>
+          <h2>不只是拍照工具，是一次文化体验</h2>
+        </div>
+        <div class="features">
+          <div class="feature"><i>🎞️</i><h3>原作叠加取景</h3><p>取景框里实时叠加原作线稿或半透明原画，透明度和变焦可调。</p></div>
+          <div class="feature"><i>🧍</i><h3>人物站位轮廓</h3><p>红色轮廓标出主角的位置和姿势，配合 3 / 10 秒自拍定时。</p></div>
+          <div class="feature"><i>🧭</i><h3>到点引导</h3><p>显示距离和方向，到达后提示“向右转 15°”，对准原作朝向。</p></div>
+          <div class="feature"><i>🖼️</i><h3>动画 vs 现实对比卡</h3><p>自动生成带作品署名、地点和冷知识的竖版卡片，一键分享。</p></div>
+          <div class="feature"><i>🔓</i><h3>镜头背后的故事</h3><p>拍摄成功才解锁：原作与现实的差异、背后的故事、冷知识，每条附出处，还能跳到官方预告片的那一秒。</p></div>
+          <div class="feature"><i>🎴</i><h3>集印章</h3><p>9 个场景 9 枚印章，激励走完整条巡礼路线；附带每个机位的文明巡礼提示。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="scenes" style="background:#13121a">
+      <div class="wrap">
+        <div class="head">
+          <p class="eyebrow">9 scenes in Tokyo</p>
+          <h2>首批收录的东京名场面</h2>
+          <p>从晴空塔到下北泽，覆盖新海诚作品与近年热门动画。</p>
+        </div>
+        <div class="scenes">
+          <figure class="scene" style="margin:0"><img src="./scenes/ochanomizu-suzume/frame.jpg" alt="" loading="lazy" /><figcaption><small>铃芽之旅</small><strong>圣桥上俯瞰神田川</strong><span>御茶之水</span></figcaption></figure>
+          <figure class="scene" style="margin:0"><img src="./scenes/shibuya-jujutsu/frame.jpg" alt="" loading="lazy" /><figcaption><small>咒术回战 涩谷事变</small><strong>涩谷站前忠犬八公像</strong><span>涩谷</span></figcaption></figure>
+          <figure class="scene" style="margin:0"><img src="./scenes/shimokita-bocchi/frame.jpg" alt="" loading="lazy" /><figcaption><small>孤独摇滚！</small><strong>Live House「STARRY」入口</strong><span>下北泽</span></figcaption></figure>
+          <figure class="scene" style="margin:0"><img src="./scenes/akiba-steinsgate/frame.jpg" alt="" loading="lazy" /><figcaption><small>命运石之门</small><strong>秋叶原收音机会馆</strong><span>秋叶原</span></figcaption></figure>
+          <figure class="scene" style="margin:0"><img src="./scenes/akiba-lovelive/frame.jpg" alt="" loading="lazy" /><figcaption><small>LoveLive!</small><strong>UTX 学院大屏幕</strong><span>秋叶原</span></figcaption></figure>
+          <figure class="scene" style="margin:0"><img src="./scenes/gyoen-kotonoha/frame.jpg" alt="" loading="lazy" /><figcaption><small>言叶之庭</small><strong>新宿御苑凉亭</strong><span>新宿</span></figcaption></figure>
+          <figure class="scene" style="margin:0"><img src="./scenes/shinjuku-tenki/frame.jpg" alt="" loading="lazy" /><figcaption><small>天气之子</small><strong>阳光洒落的西新宿高楼群</strong><span>西新宿</span></figcaption></figure>
+          <figure class="scene" style="margin:0"><img src="./scenes/skytree-conan/frame.jpg" alt="" loading="lazy" /><figcaption><small>名侦探柯南：异次元的狙击手</small><strong>铃木树塔下的柯南</strong><span>押上 · 晴空塔</span></figcaption></figure>
+          <figure class="scene" style="margin:0"><img src="./scenes/sangubashi-byosoku/frame.jpg" alt="" loading="lazy" /><figcaption><small>秒速 5 厘米</small><strong>樱花下并肩走的放学路</strong><span>代代木</span></figcaption></figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="wrap">
+        <p class="eyebrow">Try it now</p>
+        <h2>拿起手机，开始你的圣地巡礼</h2>
+        <p class="muted">手机扫码，或直接点击下方按钮</p>
+        <img class="qr" src="./about/qr.svg" alt="App 二维码" />
+        <a class="btn primary" href="./">📷 打开圣地巡礼相机</a>
+        <p class="url" style="margin-top:16px">caok.github.io/seichi-camera</p>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap">
+        <div>圣地巡礼相机 Seichi Camera · Hackathon 2026 · <a href="https://github.com/caok/seichi-camera">GitHub</a></div>
+        <div>动画画面版权归各作品版权方所有，本项目仅用于演示与介绍，画面均标注出处。</div>
+      </div>
+    </footer>
+
+    <script>
+      const video = document.getElementById('promo')
+      const sound = document.getElementById('sound')
+      sound.addEventListener('click', () => {
+        video.muted = !video.muted
+        if (!video.muted) {
+          video.currentTime = 0
+          video.play()
+        }
+        sound.textContent = video.muted ? '🔇 开启声音' : '🔊 声音已开启'
+      })
+    </script>
+  </body>
+</html>
